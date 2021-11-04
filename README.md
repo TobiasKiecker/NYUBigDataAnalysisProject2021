@@ -5,14 +5,14 @@ Our topic iss to analyze whether precipitation (rainfall) has an influence on ta
 Everything was computed on the NYU peel Cluster.
 
 
-##Datasets
+## Datasets
 The main two datasets we used are:
 
-###Taxi
+### Taxi
 The data for yellow taxis from [this website](https://www1.nyc.gov/site/tlc/about/tlc-trip-record-data.page) 
 for the years 2017, 2018 and 2019
 
-###Weather
+### Weather
 Granted by [this website](https://www.ncdc.noaa.gov/cdo-web/search) upon request.
 
 ## 1. Cleaning
