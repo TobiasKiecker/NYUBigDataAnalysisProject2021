@@ -73,6 +73,7 @@ public class CleanTaxi
 	public static class MyReducer extends Reducer<Text,Text,Text,Text>
 	{
 		private Text outputValue = new Text();
+		private Text outputKey = new Text();
 
 		public void reduce(Text key, Iterable<Text> values, Context context ) throws IOException, InterruptedException 
 		{
@@ -96,12 +97,19 @@ public class CleanTaxi
 				tipsSum += Double.valueOf(line[4]);
 			}
 
-			outputValue.set(count +","+ durationSum +","+ passengerSum+","+ 
+			outputKey.set(key + "," + count +","+ durationSum +","+ passengerSum+","+
 				Math.round(distanceSum *100)/100.0 +","+ 
 				Math.round(priceSum *100)/100.0 +","+ 
 				Math.round(tipsSum *100)/100.0 );
-
-			context.write(key, outputValue);
+			outputValue.set("");
+			context.write(outputKey , outputValue);
+			/*
+			outputValue.set(count +","+ durationSum +","+ passengerSum+","+
+				Math.round(distanceSum *100)/100.0 +","+
+				Math.round(priceSum *100)/100.0 +","+
+				Math.round(tipsSum *100)/100.0 );
+			context.write(key , outputValue);
+			 */
 		}
 	}
 
