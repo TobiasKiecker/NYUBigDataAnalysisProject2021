@@ -18,21 +18,20 @@ public class CleanTaxi
 {
 	public static class MyMapper extends Mapper<Object, Text, Text, Text>
 	{
-		private final static IntWritable one = new IntWritable(1);
-		//private final static IntWritable zero = new IntWritable(0);
+		//private final static IntWritable one = new IntWritable(1);
 
 		private Text outputKey = new Text();
 		private Text outputValue = new Text();
 
 		public void map(Object key, Text value, Context context) throws IOException, InterruptedException 
 		{
-			String line = value.toString();
+			String line = "1" + value.toString();
 
 			//1,2019-12-01 00:12:08,2019-12-01 00:12:14,1,.00,1,N,145,145,2,2.5,0.5,0.5,0,0,0.3,3.8,0
 
 			String[] lineSplit = line.split(",");
 
-			if(!lineSplit[0].equals("VendorID") && lineSplit.length == 18 && !lineSplit[0].isEmpty())  //ignore header and faulty lines
+			if(!lineSplit[0].equals("1VendorID") && lineSplit.length >= 17)  //ignore header and faulty lines
 			{
 				String entryTime = lineSplit[1];
 				String outTime = lineSplit[2];
@@ -53,16 +52,19 @@ public class CleanTaxi
 
 				int duration = (int) durationObj.toMinutes();
 
-				if(duration > 1 && duration < 1440) //check if it is to short or longer than a day
+				if(  dateTime1.getYear() >= 2017 && dateTime2.getYear() <= 2019  )
 				{
-					if(locationIn != "") //check if locationIn has been recorded
+					if(duration > 1 && duration < 1440) //check if it is to short or longer than a day
 					{
-						outputKey.set(entryTime.split(" ")[0] + "," + locationIn);
+						if(locationIn != "") //check if locationIn has been recorded
+						{
+							outputKey.set(entryTime.split(" ")[0] + "," + locationIn);
 
-						outputValue.set(duration+","+passengerCount+","+distance+","+price+","+tips);
+							outputValue.set(duration+","+passengerCount+","+distance+","+price+","+tips);
 
-						context.write(outputKey , outputValue);
-						//output:  time,location duration,passengercount,distance,price,tipps
+							context.write(outputKey , outputValue);
+							//output:  time,location duration,passengercount,distance,price,tipps
+						}
 					}
 				}
 			}
