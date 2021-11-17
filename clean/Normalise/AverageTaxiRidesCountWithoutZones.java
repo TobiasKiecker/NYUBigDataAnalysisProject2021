@@ -13,7 +13,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
-public class AverageTaxiRidesCount {
+public class AverageTaxiRidesCountWithoutZones {
 
     public static class MyMapper extends Mapper<Object, Text, Text, IntWritable>
     {
@@ -53,7 +53,7 @@ public class AverageTaxiRidesCount {
             String[] attributes = line.split(",");
             String date = attributes[0];
             int day = getDay(Integer.parseInt(date.substring(8,date.length())),Integer.parseInt(date.substring(5,7)),Integer.parseInt(date.substring(0,4)));
-            int rides = Integer.parseInt(attributes[2]);
+            int rides = Integer.parseInt(attributes[1]);
 
             context.write(new Text(String.valueOf(day)), new IntWritable(rides));
 
@@ -81,7 +81,7 @@ public class AverageTaxiRidesCount {
             int average = sum/length;
 
             for (int value : lst) {
-                standardDeviation += Math.pow(value.get() - average, 2);
+                standardDeviation += Math.pow(value - average, 2);
             }
 
             standardDeviation = Math.sqrt(standardDeviation / (double) length);
@@ -97,7 +97,7 @@ public class AverageTaxiRidesCount {
     public static void main(String[] args) throws Exception
     {
         Job job = new Job();
-        job.setJarByClass(AverageTaxiRidesCount.class);
+        job.setJarByClass(AverageTaxiRidesCountWithoutZones.class);
         job.setJobName("calculate min max dataset");
 
         job.setNumReduceTasks(1);
@@ -105,8 +105,8 @@ public class AverageTaxiRidesCount {
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
-        job.setMapperClass(AverageTaxiRidesCount.MyMapper.class);
-        job.setReducerClass(AverageTaxiRidesCount.MyReducer.class);
+        job.setMapperClass(AverageTaxiRidesCountWithoutZones.MyMapper.class);
+        job.setReducerClass(AverageTaxiRidesCountWithoutZones.MyReducer.class);
 
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(IntWritable.class);

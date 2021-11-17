@@ -17,15 +17,17 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
-public class NormaliseTaxi {
+public class NormaliseWithAvgTaxiWithoutZones {
 
         public static class MyMapper extends Mapper<Object, Text, Text, Text>
         {
             //private final static IntWritable zero = new IntWritable(0);
             private Text outputKey = new Text();
             private Text outputValue = new Text();
-            private List<Integer> maxCount = Arrays.asList(10909,12569,13734,14569,15697,13593,11858);
-            private List<Integer> maxDuration = Arrays.asList(429036,487845,452091,397573,432095,462102,347250);
+            private List<Integer> avgCount = Arrays.asList(238089,224387,267897,279431,286879,288630,274770);
+            private List<Integer> stdCount = Arrays.asList(43199,40477,43167,43163,48279,48229,52149);
+            private List<Integer> avgDuration = Arrays.asList(3925872,3995167,4542648,4863598,5204061,5157590,4598604);
+            private List<Integer> stdDuration = Arrays.asList(703783,657680,745467,762631,908139,851801,817136);
 
             public int firstOfJan(int y) {
                 int x = y - 1;
@@ -64,10 +66,10 @@ public class NormaliseTaxi {
                 String[] attributes = line.split(",");
                 String date = attributes[0];
                 int day = getDay(Integer.parseInt(date.substring(8,date.length())),Integer.parseInt(date.substring(5,7)),Integer.parseInt(date.substring(0,4)));
-                double normalisedCount = (Integer.parseInt(attributes[2])-1) / (double) (maxCount.get(day)-1);
-                double normalisedDuration = (Integer.parseInt(attributes[3])-2) / (double) (maxDuration.get(day)-2);
+                double stdFromavgCount = (Integer.parseInt(attributes[1])- avgCount.get(day)) / (double) (stdCount.get(day));
+                double stdFromavgDuration = (Integer.parseInt(attributes[2])-avgDuration.get(day)) / (double) (stdDuration.get(day));
                 DecimalFormat df = new DecimalFormat("#.#####");
-                outputKey.set(date +","+ day +","+ attributes[1] +","+ df.format(normalisedCount) +","+ df.format(normalisedDuration));
+                outputKey.set(date +","+ day +","+ df.format(stdFromavgCount) +","+ df.format(stdFromavgDuration));
                 outputValue.set("");
                 context.write(outputKey , outputValue);
 
@@ -85,7 +87,7 @@ public class NormaliseTaxi {
         public static void main(String[] args) throws Exception
         {
             Job job = new Job();
-            job.setJarByClass(NormaliseTaxi.class);
+            job.setJarByClass(NormaliseWithAvgTaxiWithoutZones.class);
             job.setJobName("clean dataset");
 
             job.setNumReduceTasks(1);
@@ -93,8 +95,8 @@ public class NormaliseTaxi {
             FileInputFormat.addInputPath(job, new Path(args[0]));
             FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
-            job.setMapperClass(NormaliseTaxi.MyMapper.class);
-            job.setReducerClass(NormaliseTaxi.MyReducer.class);
+            job.setMapperClass(NormaliseWithAvgTaxiWithoutZones.MyMapper.class);
+            job.setReducerClass(NormaliseWithAvgTaxiWithoutZones.MyReducer.class);
 
             job.setOutputKeyClass(Text.class);
             job.setOutputValueClass(Text.class);
