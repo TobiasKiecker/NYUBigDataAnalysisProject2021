@@ -1,5 +1,6 @@
 This repository was created for the final project in the course **Processing Big Data for Analytics Applications** at New York University in the Fall2021 Semester
 
+# Structure
 
 The /ana_code directory contains our analytics code. The main part is the python script for checking correlation, but it also contains several mapReduce programs for finding minimum and maximum values. The results of these programs are used to normalize the taxi data.
 
