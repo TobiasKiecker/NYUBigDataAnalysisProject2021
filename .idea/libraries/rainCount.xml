@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="rainCount">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/analysis/RainCount/rainCount.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
